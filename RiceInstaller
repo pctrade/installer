@@ -785,7 +785,7 @@ configure_services() {
 
     # Enable SDDM Display Manager
     printf "%b\n" "${BLD}${CYE}Enabling SDDM display manager...${CNC}"
-    if sudo systemctl enable --now sddm.service >> "$ERROR_LOG" 2>&1; then
+    if sudo systemctl enable sddm.service >> "$ERROR_LOG" 2>&1; then
         printf "%b\n\n" "${BLD}${CGR}SDDM display manager enabled successfully${CNC}"
     else
         log_error "Failed to enable SDDM display manager"
