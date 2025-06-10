@@ -696,6 +696,40 @@ install_dotfiles() {
     sleep 3
 }
 
+configure_flatpak() {
+    clear
+    logo "Configuring Flatpak Repositories"
+    sleep 1
+
+    # Check if flatpak is installed
+    if ! command -v flatpak &>/dev/null; then
+        printf "%b\n\n" "${BLD}${CRE}Flatpak is not installed. Installing...${CNC}"
+        if sudo pacman -Sy --noconfirm flatpak >> "$ERROR_LOG" 2>&1; then
+            printf "%b\n" "${BLD}${CGR}Flatpak installed successfully${CNC}"
+        else
+            log_error "Failed to install Flatpak"
+            printf "%b\n\n" "${BLD}${CRE}Failed to install Flatpak${CNC}"
+            return 1
+        fi
+    fi
+
+    # Add Flathub if it's not already added
+    if flatpak remote-list | grep -q flathub; then
+        printf "%b\n\n" "${BLD}${CYE}Flathub repository is already configured${CNC}"
+    else
+        printf "%b\n" "${BLD}${CYE}Adding Flathub repository...${CNC}"
+        if flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo >> "$ERROR_LOG" 2>&1; then
+            printf "%b\n\n" "${BLD}${CGR}Flathub repository added successfully${CNC}"
+        else
+            log_error "Failed to add Flathub repository"
+            printf "%b\n\n" "${BLD}${CRE}Failed to add Flathub repository${CNC}"
+        fi
+    fi
+
+    sleep 2
+}
+
+
 configure_services() {
     clear
     logo "Configuring Services"
@@ -871,6 +905,7 @@ clone_dotfiles
 
 backup_existing_config
 install_dotfiles
+configure_flatpak
 configure_services
 change_default_shell
 final_prompt
