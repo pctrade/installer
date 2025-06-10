@@ -218,7 +218,7 @@ install_dependencies() {
     sudo pacman -Syy
 
     # List of dependencies
-    dependencies="xarchiver cliphist niri bc swaybg wf-recorder bluez bluez-utils blueman fastfetch thunar-archive-plugin thunar-volman grim slurp upower alacritty base-devel bat brightnessctl bspwm clipcat dunst eza feh fzf thunar tumbler gvfs-mtp firefox geany git imagemagick jq jgmenu kitty libwebp maim mpc mpd mpv neovim ncmpcpp npm pamixer pacman-contrib papirus-icon-theme picom playerctl polybar lxsession-gtk3 python-gobject redshift rofi-wayland rustup sxhkd tmux xclip xdg-user-dirs xdo xdotool xsettingsd xorg-xdpyinfo xorg-xkill xorg-xprop xorg-xrandr xorg-xsetroot xorg-xwininfo yazi zsh zsh-autosuggestions zsh-history-substring-search zsh-syntax-highlighting ttf-inconsolata ttf-jetbrains-mono xwayland-satellite ttf-jetbrains-mono-nerd ttf-terminus-nerd ttf-ubuntu-mono-nerd webp-pixbuf-loader"
+    dependencies="sddm pipewire pipewire-alsa pipewire-pulse wireplumber noto-fonts noto-fonts-cjk noto-fonts-emoji hyprpicker xfce4-panel gnome-sudoku gnome-software flatpak xarchiver cliphist niri bc swaybg wf-recorder bluez bluez-utils blueman fastfetch thunar-archive-plugin thunar-volman grim slurp upower alacritty base-devel bat brightnessctl bspwm clipcat dunst eza feh fzf thunar tumbler gvfs-mtp firefox geany git imagemagick jq jgmenu kitty libwebp maim mpc mpd mpv neovim ncmpcpp npm pamixer pacman-contrib papirus-icon-theme picom playerctl polybar lxsession-gtk3 python-gobject redshift rofi-wayland rustup sxhkd tmux xclip xdg-user-dirs xdo xdotool xsettingsd xorg-xdpyinfo xorg-xkill xorg-xprop xorg-xrandr xorg-xsetroot xorg-xwininfo yazi zsh zsh-autosuggestions zsh-history-substring-search zsh-syntax-highlighting ttf-inconsolata ttf-jetbrains-mono xwayland-satellite ttf-jetbrains-mono-nerd ttf-terminus-nerd ttf-ubuntu-mono-nerd webp-pixbuf-loader"
 
     printf "\n%b\n\n" "${BLD}${CBL}Checking for required packages...${CNC}"
     sleep 2
@@ -730,6 +730,36 @@ configure_services() {
         log_error "Failed to enable user ArchUpdates service"
         printf "%b\n\n" "${BLD}${CRE}Failed to activate user ArchUpdates service${CNC}"
     fi
+
+    # Enable Bluetooth Service
+    printf "%b\n" "${BLD}${CYE}Enabling Bluetooth service...${CNC}"
+    if sudo systemctl enable --now bluetooth.service >> "$ERROR_LOG" 2>&1; then
+        printf "%b\n\n" "${BLD}${CGR}Bluetooth service enabled successfully${CNC}"
+    else
+        log_error "Failed to enable Bluetooth service"
+        printf "%b\n\n" "${BLD}${CRE}Failed to activate Bluetooth service${CNC}"
+    fi
+
+    # Enable SDDM Display Manager
+    printf "%b\n" "${BLD}${CYE}Enabling SDDM display manager...${CNC}"
+    if sudo systemctl enable --now sddm.service >> "$ERROR_LOG" 2>&1; then
+        printf "%b\n\n" "${BLD}${CGR}SDDM display manager enabled successfully${CNC}"
+    else
+        log_error "Failed to enable SDDM display manager"
+        printf "%b\n\n" "${BLD}${CRE}Failed to activate SDDM display manager${CNC}"
+    fi
+
+    # Enable PipeWire Audio Services
+    for service in pipewire.service pipewire-pulse.service wireplumber.service; do
+        printf "%b\n" "${BLD}${CYE}Enabling user $service...${CNC}"
+        if systemctl --user enable --now "$service" >> "$ERROR_LOG" 2>&1; then
+            printf "%b\n" "${BLD}${CGR}User $service activated successfully${CNC}"
+        else
+            log_error "Failed to enable $service"
+            printf "%b\n" "${BLD}${CRE}Failed to activate $service${CNC}"
+        fi
+    done
+    printf "\n"
 
     # Virtual Machine Detection
     is_virtual_machine() {
