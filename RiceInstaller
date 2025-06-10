@@ -761,6 +761,15 @@ configure_services() {
     done
     printf "\n"
 
+    # Enable macfanctld for fan control
+    printf "%b\n" "${BLD}${CYE}Enabling macfanctld service...${CNC}"
+    if sudo systemctl enable --now macfanctld.service >> "$ERROR_LOG" 2>&1; then
+        printf "%b\n\n" "${BLD}${CGR}macfanctld service enabled successfully${CNC}"
+    else
+        log_error "Failed to enable macfanctld service"
+        printf "%b\n\n" "${BLD}${CRE}Failed to activate macfanctld service${CNC}"
+    fi
+
     # Virtual Machine Detection
     is_virtual_machine() {
         systemd-detect-virt --quiet >/dev/null 2>&1
