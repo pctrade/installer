@@ -904,7 +904,6 @@ final_prompt() {
 initial_checks
 welcome
 add_gh0stzk_repo
-add_chaotic_repo
 
 install_dependencies
 install_gh0stzk_dependencies
