@@ -903,6 +903,7 @@ final_prompt() {
 # --- Main run --- #
 initial_checks
 welcome
+add_chaotic_repo
 add_gh0stzk_repo
 
 install_dependencies
